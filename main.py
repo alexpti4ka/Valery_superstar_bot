@@ -10,21 +10,21 @@ import sklearn
 # < ---- код работы с внешней библиотекой диалогов, перенести потом на место ---->
 
 def get_data_feeds():
-    dataset_zip = open('dialogues.zip', 'w+')
+
     dataset_https = requests.get(
         "https://github.com/Koziev/NLP_Datasets/raw/e3036dad58023fbec98410d44cfbb40e5990bbec/Conversations/Data/dialogues.zip",
         stream=True)
     with ZipFile('dataset_https') as dataset_zip:
-        with myzip.open('dataset.csv') as dataset_unzip:
-            print(dataset_unzip.read())
+        with dataset_zip.open('dataset.csv') as dataset_unzip:
+            # print(dataset_unzip.read()) я что-то не уверена, что выводить весь массив - хорошая идея
 
+            dataset = open('dataset.csv', 'w+')
+            with open('dataset_unzip') as f:
+                content = f.read()
 
-with open('dataset_unzip') as f:
-    content = f.read()
-
-for line in dataset_unzip.iter_lines():
-    if len(line) <= 1:
-        continue
+            for line in dataset.iter_lines():
+                if len(line) <= 1:
+                    continue
 
     parts = line.decode("utf-8").split("\n")
 
@@ -39,7 +39,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC, SVC
 
 
-from Config import BOT_CONFIG
+from config import BOT_CONFIG
 
 
 # <--- сюда вставляем новую классификацию день 2 --->
