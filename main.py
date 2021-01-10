@@ -14,7 +14,9 @@ def get_data_feeds():
     dataset_https = requests.get(
         "https://github.com/Koziev/NLP_Datasets/raw/e3036dad58023fbec98410d44cfbb40e5990bbec/Conversations/Data/dialogues.zip",
         stream=True)
-    dataset_unzip = zipfile.ZipFile(dataset_https, mode='r')
+    with ZipFile('dataset_https') as dataset_zip:
+        with myzip.open('dataset.csv') as dataset_unzip:
+            print(dataset_unzip.read())
 
 
 with open('dataset_unzip') as f:
@@ -26,7 +28,7 @@ for line in dataset_unzip.iter_lines():
 
     parts = line.decode("utf-8").split("\n")
 
-    f = csv.writer(dataset_unzip)
+    f = csv.writer(parts)
 
 # /< ---- код работы с внешней библиотекой диалогов, перенести потом на место ---->
 
@@ -216,5 +218,6 @@ def main():
     updater.idle()
 main()
 
+dataset_zip.close()
 dataset_unzip.close()
 token.close()
