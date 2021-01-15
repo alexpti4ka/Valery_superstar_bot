@@ -4,42 +4,37 @@ import json
 import random
 import nltk
 import zipfile
+from zipfile import ZipFile
 import sklearn
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import LinearSVC, SVC
+
+
+from config import BOT_CONFIG
 
 
 # < ---- код работы с внешней библиотекой диалогов, перенести потом на место ---->
+content = ""
 
 def get_data_feeds():
 
     dataset_https = requests.get(
         "https://github.com/Koziev/NLP_Datasets/raw/e3036dad58023fbec98410d44cfbb40e5990bbec/Conversations/Data/dialogues.zip",
         stream=True)
-    with ZipFile('dataset_https') as dataset_zip:
-        with dataset_zip.open('dataset.csv') as dataset_unzip:
-            # print(dataset_unzip.read()) я что-то не уверена, что выводить весь массив - хорошая идея
+    #f = open('dialogues.zip', '+w') # rb = open as binary mode # w+ будем писать в файл (по умолчанию reed only)
+    content = dataset_https.content
+    #f.write(str(content))
+    dataset_zip = ZipFile('dialogues.zip', 'w', zipfile.ZIP_DEFLATED)
+    dataset_zip.write(dataset_https.text)
+    dataset_zip.close()
 
-            dataset = open('dataset.csv', 'w+')
-            with open('dataset_unzip') as f:
-                content = f.read()
-
-            for line in dataset.iter_lines():
-                if len(line) <= 1:
-                    continue
-
-    parts = line.decode("utf-8").split("\n")
-
-    f = csv.writer(parts)
+# content = dialogues.ZipFile.extract()
+    #f.close()
 
 # /< ---- код работы с внешней библиотекой диалогов, перенести потом на место ---->
 
-
-
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.svm import LinearSVC, SVC
-
-
-from config import BOT_CONFIG
 
 
 # <--- сюда вставляем новую классификацию день 2 --->
@@ -178,8 +173,7 @@ def bot(question):
 
 # Добавляем пример кода простого эхо-бота, чистим от ненужного
 
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
@@ -204,6 +198,7 @@ def echo(update: Update, context: CallbackContext) -> None:
 
 def main():
     """Start the bot."""
+    get_data_feeds()
 
     token = open("token.json")
     token_json = json.loads(token.read())
@@ -218,6 +213,6 @@ def main():
     updater.idle()
 main()
 
-dataset_zip.close()
-dataset_unzip.close()
-token.close()
+# dataset_zip.close()
+# dataset_unzip.close()
+# token.close()
